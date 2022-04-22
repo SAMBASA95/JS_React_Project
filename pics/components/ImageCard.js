@@ -3,24 +3,19 @@ import React from 'react';
 class ImageCard extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = { spans: 0 };
-
-        this.imageRef = React.createRef();
+        this.state = { spans: 0 }
+        this.imageRef = React.createRef()
     }
-
+    
     componentDidMount() {
-        console.log(this.imageRef)
-        this.imageRef.current.addEventListener('load', this.setSpans);
+        // console.log(this.imageRef)
+        this.imageRef.current.addEventListener('load', this.getHt = () => {
+            const height = this.imageRef.current.clientHeight
+            const spans = Math.ceil(height / 10)
+            // console.log(spans, height)
+            this.setState({ spans })
+        })
     }
-
-    setSpans = () => {
-        const height = this.imageRef.current.clientHeight;
-
-        const spans = Math.ceil(height / 10);
-
-        this.setState({ spans });
-    };
 
     render() {
         const { description, urls } = this.props.image;
