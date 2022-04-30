@@ -3,9 +3,20 @@ import axios from "axios";
 
 const Search = () => {
     const [term, setTerm] = useState('DATA ANALYTICS');
+    const [debouncedTerm, setDebouncedTerm] = useState(term)
     const [results, setResults] = useState([]);
 
     // const url = "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=EDMRequest%20URL:%20https://en.wikipedia.org/w/api.php?action=query&list=search&origin=*&format=json&srsearch="
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            setDebouncedTerm(term)
+        },400)
+
+        return () => {
+            clearTimeout(timerId)
+        }
+    },[term])
+
     useEffect(() => {
         const search = async () => {
             const { data } = await axios.get("https://en.wikipedia.org/w/api.php", {
@@ -14,22 +25,44 @@ const Search = () => {
                     list: "search",
                     origin: "*",
                     format: "json",
-                    srsearch: term,
+                    srsearch: debouncedTerm,
                 },
             });
             setResults(data.query.search);
-        };
-
-        const timeoutId = setTimeout(() => {
-            if(term){
-                search()
-            }
-        },500)
-
-        return () => {
-            clearTimeout(timeoutId)
         }
-    }, [term])
+        if (debouncedTerm) {
+            search()
+        } 
+    },[debouncedTerm])
+
+    // useEffect(() => {
+    //     const search = async () => {
+    //         const { data } = await axios.get("https://en.wikipedia.org/w/api.php", {
+    //             params: {
+    //                 action: "query",
+    //                 list: "search",
+    //                 origin: "*",
+    //                 format: "json",
+    //                 srsearch: term,
+    //             },
+    //         });
+    //         setResults(data.query.search);
+    //     };
+
+    //     if (term && !results.length) {
+    //         search()
+    //     } else {
+    //         const timeoutId = setTimeout(() => {
+    //             if (term) {
+    //                 search()
+    //             }
+    //         }, 500)
+
+    //         return () => {
+    //             clearTimeout(timeoutId)
+    //         }
+    //     }
+    // }, [term, results.length])
 
     // const getData = async () => {
     //     const response = await fetch(url + term);
